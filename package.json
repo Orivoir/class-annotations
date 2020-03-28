@@ -1,0 +1,19 @@
+{
+  "name": "class-annotations",
+  "version": "0.1.0",
+  "description": "",
+  "main": "class-annotations.js",
+  "scripts": {
+  },
+  "keywords": [
+    "reflect" ,
+    "annotation" ,
+    "class" ,
+    "reflection" ,
+    "ES6" ,
+    "convert" ,
+    "class-annotations"
+  ],
+  "author": "Samuel Gaborieau",
+  "license": "ISC"
+}
