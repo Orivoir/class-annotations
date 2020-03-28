@@ -10,6 +10,8 @@ foo.js
 
 /**
  * @Route( { name: "foo" , path: "/foo" , exactPath: true , methods=['GET'] } )
+ * @Another = 35
+ * @Another2: "hello"
  */
 class Foo {
 
@@ -48,6 +50,14 @@ output log of `annotations`:
                     path: { valueBrut: "/foo" , value: "/foo" } ,
                     exactPath: { valueBrut: "true" , value: true } ,
                     methods: { valueBrut: "['GET']" , value: [ 'GET' ] }
+                } ,
+                Another: {
+                    valueBrut: "35" ,
+                    value: 35
+                } ,
+                Another2: {
+                    valueBrut: "hello" ,
+                    value: "hello"
                 }
             } ,
             classname: "Foo"
