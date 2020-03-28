@@ -5,6 +5,9 @@
   "main": "class-annotations.js",
   "scripts": {
   },
+  "repository": {
+    "git": "https://github.com/Orivoir/class-annotations.git"
+  },
   "keywords": [
     "reflect" ,
     "annotation" ,
