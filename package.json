@@ -1,22 +1,30 @@
 {
   "name": "class-annotations",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "A reader annotations from class write with ES6 syntax",
   "main": "class-annotations.js",
   "scripts": {
+    "test": "mocha test" ,
+    "coverage": "nyc npm test"
   },
   "repository": {
-    "git": "https://github.com/Orivoir/class-annotations.git"
+    "type": "git",
+    "url": "https://github.com/Orivoir/class-annotations.git"
   },
   "keywords": [
-    "reflect" ,
-    "annotation" ,
-    "class" ,
-    "reflection" ,
-    "ES6" ,
-    "convert" ,
+    "reflect",
+    "annotation",
+    "class",
+    "reflection",
+    "ES6",
+    "convert",
     "class-annotations"
   ],
   "author": "Samuel Gaborieau",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^7.1.1",
+    "nyc": "^15.0.0"
+  }
 }

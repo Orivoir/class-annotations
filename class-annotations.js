@@ -1,6 +1,8 @@
 const pathResolver = require('path') ;
 const fs = require('fs') ;
+
 const ReaderAnnotations = require('./lib/reader-annotations') ;
+const clientDir = require('./lib/client-dir')() ;
 
 class ClassAnnotation {
 
@@ -36,7 +38,7 @@ class ClassAnnotation {
 
     instancesReaders() {
 
-        this.partials.forEach( partial => (
+        this.partials.forEach( partial => {
 
             partial.isLastLine && partial.isOpened ?
             this.readers[ partial.classname ] = {
@@ -50,18 +52,21 @@ class ClassAnnotation {
                 }
             }
             : null
-        ) ) ;
+        } ) ;
 
         return this ;
     }
 
     filterPartial() {
 
-        this.partials.forEach( partial => (
-            partial.isLastLine ?
-            this.checkOpenedAnnotation( partial )
-            : null
-        ) ) ;
+        this.partials.forEach( partial => {
+
+            if( partial.isLastLine ) {
+
+                partial = this.checkOpenedAnnotation( partial ) ;
+            }
+
+        } ) ;
 
         return this ;
     }
@@ -75,9 +80,15 @@ class ClassAnnotation {
         if( pathResolver.isAbsolute( pathFile ) ) {
 
             this._pathFile = pathFile ;
+
         } else {
 
             this._pathFile = pathResolver.join( ClassAnnotation.__DIR__ , pathFile ) ;
+        }
+
+        // resolve ext file
+        if( pathResolver.basename( pathFile ).indexOf('.js') === -1 ) {
+            this._pathFile += '.js' ;
         }
     }
 
@@ -101,7 +112,7 @@ class ClassAnnotation {
 
         while(
             !isFoundOpened &&
-            i > 0
+            i >= 0
         ) {
 
             const currentLine = lines[ i ] ;
@@ -114,6 +125,11 @@ class ClassAnnotation {
             }
 
             i-- ;
+        }
+
+        if( !isFoundOpened ) {
+
+            partial.isOpened = false;
         }
 
         return partial ;
@@ -222,17 +238,19 @@ class ClassAnnotation {
 
 } ;
 
-module.exports = function( __DIR__ ) {
+function createClassAnnotation( __DIR__ ) {
 
-    ClassAnnotation.__DIR__ = __DIR__ ;
+        ClassAnnotation.__DIR__ = typeof __DIR__ === "string" ? __DIR__ : clientDir ;
 
-    if(
-        typeof __DIR__ !== 'string' ||
-        !pathResolver.isAbsolute( __DIR__ )
-    ) {
+        if(
+            typeof __DIR__ !== 'string' ||
+            !pathResolver.isAbsolute( __DIR__ )
+        ) {
 
-        throw RangeError('ClassAnnotation should be an absolute path') ;
-    }
+            throw RangeError('ClassAnnotation should be an absolute path') ;
+        }
 
-    return ClassAnnotation ;
-} ;
+        return ClassAnnotation ;
+}
+
+module.exports = createClassAnnotation ;

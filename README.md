@@ -11,6 +11,9 @@ foo.js
 /**
  * @Route( { name: "foo" , path: "/foo" , exactPath: true , methods=['GET'] } )
  * @Another = 35
+ *
+ * should be an excludes values
+ *
  * @Another2: "hello"
  */
 class Foo {
@@ -29,8 +32,9 @@ class Foo {
 app.js
 ```javascript
 
-// give a static directory in argument 1 or give absolute path to instantiate
-const ClassAnnotation = require('class-annotations')( __dirname ) ;
+const createClassAnnotations = require('class-annotations') ;
+
+const ClassAnnotations = createClassAnnotations( __dirname ) ;
 
 const annotations = new ClassAnnotations('./foo.js') ;
 
@@ -41,10 +45,12 @@ output log of `annotations`:
 ```javascript
 {
     classCount: 1 ,
+
     readers: {
 
         Foo: {
             data: {
+                exludes: ['','should be an excludes values','']
                 Route: {
                     name: { valueBrut: "foo", value: "foo" } ,
                     path: { valueBrut: "/foo" , value: "/foo" } ,
@@ -66,7 +72,12 @@ output log of `annotations`:
 }
 ```
 
-### `ClassAnnotation` can persist the data type of all the natives type
+### you can persist the data type of all the natives type
+
+### you can read multiple class inner single file
 
 - npm install class-annotations --save
 - yarn add class-annotations
+
+
+#### If you have detect an bug or anormal behavior with `ClassAnnotaions` please remote a issues on [github](https://github.com/Orivoir/class-annotations/issues)
