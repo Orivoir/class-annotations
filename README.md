@@ -2,12 +2,15 @@
 
 ## use a reader of annotations for class write with ES6 syntax , with easy use.
 
+### auto persist the data type of all the natives type
+
+### can read multiples `class` inner single file
+
 - npm install class-annotations --save
 - yarn add class-annotations
 
 foo.js
 ```javascript
-
 /**
  * @Route( { name: "foo" , path: "/foo" , exactPath: true , methods=['GET'] } )
  * @Another = 35
@@ -71,10 +74,6 @@ output log of `annotations`:
     }
 }
 ```
-
-### you can persist the data type of all the natives type
-
-### you can read multiple class inner single file
 
 - npm install class-annotations --save
 - yarn add class-annotations
