@@ -1,12 +1,14 @@
 # [class-annotations]( https://www.npmjs.com/package/class-annotations )
 
-## use a reader of annotations for class write with ES6 syntax , with easy use.
+## use a reader of annotations for write you models with ES6 new syntax , easy usage.
 
 ### auto persist the data type of all the natives type
 
 ### can read multiples `class` inner single file
 
 ### support value multilines
+
+A comment not starting with an: "@" character not be considered as an annotation, but may be brought up in the data provided via the table: excludes
 
 - npm install class-annotations --save
 - yarn add class-annotations
@@ -35,7 +37,6 @@ class Foo {
     }
 
     // ...
-
 } ;
 ```
 
@@ -88,6 +89,5 @@ output log of `annotations`:
 
 - npm install class-annotations --save
 - yarn add class-annotations
-
 
 #### If you have detect an bug or anormal behavior with `ClassAnnotaions` please remote a issues on [github](https://github.com/Orivoir/class-annotations/issues)
