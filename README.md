@@ -6,6 +6,8 @@
 
 ### can read multiples `class` inner single file
 
+### support value multilines
+
 - npm install class-annotations --save
 - yarn add class-annotations
 
@@ -18,6 +20,11 @@ foo.js
  * should be an excludes values
  *
  * @Another2: "hello"
+ *
+ * @Another3( {
+ *  foo: "bar" ,
+ *  foo2: "bar2" ,
+ * } )
  */
 class Foo {
 
@@ -67,6 +74,10 @@ output log of `annotations`:
                 Another2: {
                     valueBrut: "hello" ,
                     value: "hello"
+                } ,
+                Another3: {
+                    valueBrut: '{ foo: "bar" ,foo2: "bar2" ,}' ,
+                    value: { foo: "bar" ,foo2: "bar2" }
                 }
             } ,
             classname: "Foo"
