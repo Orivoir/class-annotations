@@ -15,6 +15,7 @@ class ClassAnnotation {
     constructor( pathFile ) {
 
         this.pathFile = pathFile ;
+        this.items = [] ;
 
         if( fs.existsSync( this.pathFile ) ) {
 
@@ -22,8 +23,10 @@ class ClassAnnotation {
                 this._pathFile , 'utf-8'
             ) ;
 
-            this.run() ;
+            this.isFile = true;
+            this.isDirectory = false;
 
+            this.run() ;
 
         } else {
             // here file not exists
@@ -34,9 +37,7 @@ class ClassAnnotation {
 
                 const directoryName = pathResolver.basename( this.pathDirectory ) ;
 
-                this.directories = {} ;
-
-                this.directories[ directoryName ] = new ReadDirectory( this.pathDirectory ) ;
+                this[ directoryName ] = new ReadDirectory( this.pathDirectory ) ;
 
             } else {
 
@@ -49,8 +50,6 @@ class ClassAnnotation {
     }
 
     run() {
-
-        this.readers = {} ;
 
         if( this.contentFile.indexOf('/**') !== -1 ) {
 
@@ -74,7 +73,7 @@ class ClassAnnotation {
 
             if( partial.isLastLine && partial.isOpened ) {
 
-                this.readers[ partial.classname ] = this.buildReaderData() ;
+                this[ partial.classname ] = this.buildReaderData() ;
 
             }
 
@@ -86,6 +85,7 @@ class ClassAnnotation {
     buildReaderData() {
 
         const partial = this.worker ;
+        this.items.push( partial.classname ) ;
 
         return {
 
