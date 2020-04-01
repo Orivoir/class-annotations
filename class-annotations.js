@@ -3,6 +3,7 @@ const fs = require('fs') ;
 
 const ReaderAnnotations = require('./lib/reader-annotations') ;
 const clientDir = require('./lib/client-dir')() ;
+const ReadDirectory = require('./lib/read-directory') ;
 
 class ClassAnnotation {
 
@@ -26,8 +27,22 @@ class ClassAnnotation {
 
         } else {
             // here file not exists
-            this.success = false;
-            this.details = 'ClassAnnotations Error: file not found from: ' + this.pathFile ;
+
+            this.pathDirectory = pathFile ;
+
+            if( fs.existsSync( this.pathDirectory ) ) {
+
+                const directoryName = pathResolver.basename( this.pathDirectory ) ;
+
+                this.directories = {} ;
+
+                this.directories[ directoryName ] = new ReadDirectory( this.pathDirectory ) ;
+
+            } else {
+
+                this.success = false;
+                this.details = 'ClassAnnotations Error: file not found from: ' + this.pathFile ;
+            }
         }
 
         this.cleanOutput() ;
@@ -102,6 +117,22 @@ class ClassAnnotation {
         } ) ;
 
         return this ;
+    }
+
+    get pathDirectory() {
+
+        return this._pathDirectory ;
+    }
+    set pathDirectory( pathDirectory ) {
+
+        if( pathResolver.isAbsolute( pathDirectory ) ) {
+
+            this._pathDirectory = pathDirectory ;
+
+        } else {
+
+            this._pathDirectory = pathResolver.join( ClassAnnotation.__DIR__ , pathDirectory ) ;
+        }
     }
 
     get pathFile() {
@@ -272,9 +303,7 @@ class ClassAnnotation {
         return this.countClass ;
     }
 
-} ;
-
-function createClassAnnotation( __DIR__ ) {
+    static create( __DIR__ ) {
 
         ClassAnnotation.__DIR__ = typeof __DIR__ === "string" ? __DIR__ : clientDir ;
 
@@ -287,6 +316,8 @@ function createClassAnnotation( __DIR__ ) {
         }
 
         return ClassAnnotation ;
-}
+    }
 
-module.exports = createClassAnnotation ;
+} ;
+
+module.exports = ClassAnnotation.create ;

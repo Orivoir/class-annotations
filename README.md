@@ -8,6 +8,8 @@
 
 ### support value multilines
 
+### can read all items from directories ( beta features )
+
 A comment not starting with an: "@" character not be considered as an annotation, but may be brought up in the data provided via the table: excludes
 
 - npm install class-annotations --save
@@ -44,7 +46,6 @@ class Foo {
 
 app.js
 ```javascript
-
 const createClassAnnotations = require('class-annotations') ;
 
 const ClassAnnotations = createClassAnnotations( __dirname ) ;
@@ -118,5 +119,94 @@ output log of `annotations` data:
 
 - npm install class-annotations --save
 - yarn add class-annotations
+
+
+### Read an directory:
+
+structure directories *e.g*:
+- app.js
+- models/
+    - foo.js
+    - foo2.js
+    - submodels/
+        - foo3.js
+
+app.js
+```javascript
+const createClassAnnotations = require('class-annotations') ;
+
+const ClassAnnotations = createClassAnnotations( __dirname ) ;
+
+// read models directory
+const annotations = new ClassAnnotations('./models') ;
+
+console.log( annotations ) ;
+```
+
+output log of `annotations` data:
+```javascript
+{
+    directories: {
+        models: {
+            'foo.js': {
+                readers: {
+                    Foo: {
+                        data: {
+                            // your annotations data
+                        }
+                    }
+                } ,
+                success: boolean ,
+                ?details: string
+            } ,
+            'foo2.js': {
+                readers: {
+                    Foo2: {
+                        data: {
+                            // your annotaions data
+                        }
+                    }
+                } ,
+                success: boolean,
+                ?details: string
+            } ,
+            submodels: {
+
+                directories: {
+
+                    // because recursive reader
+                    submodels: {
+                        'foo3.js': {
+                            readers: {
+                                Foo3: {
+                                    data: {
+                                        // your annotations data
+                                    }
+                                } ,
+                                success: boolean ,
+                                ?details: string
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+console.log(
+    annotations // ClassAnnotations
+    .directories // object
+    .models // ReadDirectory
+    .submodels // ClassAnnotations
+    .directories // object
+    .submodels // ReadDirectory
+    ['foo3.js'] // ClassAnnotations
+    .readers // object
+    .Foo3 // object
+    .data // object
+) ;
+```
+
 
 #### If you have detect an bug or anormal behavior with `ClassAnnotaions` please remote a issues on [github](https://github.com/Orivoir/class-annotations/issues)
