@@ -13,6 +13,8 @@ A comment not starting with an: "@" character not be considered as an annotation
 - npm install class-annotations --save
 - yarn add class-annotations
 
+### for next exemples  the physical path of file have been replace with: `{{pathFile}}`
+
 foo.js
 ```javascript
 /**
@@ -55,7 +57,9 @@ console.log( annotations ) ;
 output log of `annotations`:
 ```javascript
 {
+    pathFile: '{{pathFile}}',
     classCount: 1 ,
+    success: true,
 
     readers: {
 
@@ -84,6 +88,31 @@ output log of `annotations`:
             classname: "Foo"
         }
     }
+}
+```
+
+# you can check `success` property before use data
+
+if success is `false` you can get `details` property *e.g*:
+
+app.js
+```javascript
+
+const createClassAnnotations = require('class-annotations') ;
+
+const ClassAnnotations = createClassAnnotations( __dirname ) ;
+
+const annotations = new ClassAnnotations('./not-exists.js') ;
+
+console.log( annotations ) ;
+```
+
+output log of `annotations` data:
+```javascript
+{
+    pathFile: '{{pathFile}}',
+    success: false,
+    details: 'ClassAnnotations Error: file not found from: {{pathFile}}'
 }
 ```
 

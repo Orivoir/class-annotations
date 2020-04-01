@@ -15,46 +15,79 @@ class ClassAnnotation {
 
         this.pathFile = pathFile ;
 
-        this.contentFile = fs.readFileSync(
-            pathResolver.join( this._pathFile ) , 'utf-8'
-        ) ;
+        if( fs.existsSync( this.pathFile ) ) {
+
+            this.contentFile = fs.readFileSync(
+                this._pathFile , 'utf-8'
+            ) ;
+
+            this.run() ;
+
+
+        } else {
+            // here file not exists
+            this.success = false;
+            this.details = 'ClassAnnotations Error: file not found from: ' + this.pathFile ;
+        }
+
+        this.cleanOutput() ;
+    }
+
+    run() {
 
         this.readers = {} ;
 
         if( this.contentFile.indexOf('/**') !== -1 ) {
 
-            this.countClassDefine ; // product "this.countClass" and "this.classIndex"
-            this.isolatePartial ; // product "this.partials"
+            this.countClassDefine ; // getter build: "this.countClass" and "this.classIndex" attributes
+            this.isolatePartial ; // getter build: "this.partials" attribute
 
             this
                 .filterPartial()
                 .instancesReaders()
             ;
-
         }
 
-        this.cleanOutput() ;
+        this.success = true ;
     }
 
     instancesReaders() {
 
         this.partials.forEach( partial => {
 
-            partial.isLastLine && partial.isOpened ?
-            this.readers[ partial.classname ] = {
-                classname: partial.classname ,
-                annotations: new ReaderAnnotations(
-                    partial.lines
-                ) ,
-                get data() {
+            this.worker = partial ;
 
-                    return this.annotations.data ;
-                }
+            if( partial.isLastLine && partial.isOpened ) {
+
+                this.readers[ partial.classname ] = this.buildReaderData() ;
+
             }
-            : null
+
         } ) ;
 
         return this ;
+    }
+
+    buildReaderData() {
+
+        const partial = this.worker ;
+
+        return {
+
+            classname: partial.classname ,
+
+            annotations: new ReaderAnnotations(
+                partial.lines ,
+                partial.classname
+            ) ,
+
+            get data() {
+
+                return this.annotations.data ;
+            }
+
+        } ;
+
     }
 
     filterPartial() {
@@ -87,17 +120,20 @@ class ClassAnnotation {
         }
 
         // resolve ext file
-        if( pathResolver.basename( pathFile ).indexOf('.js') === -1 ) {
+        if( pathResolver.basename( pathFile ).split('.').pop() != "js" ) {
             this._pathFile += '.js' ;
         }
     }
 
     cleanOutput() {
 
+        // persist only final data
+
         delete this.partials ;
         delete this.isAlreadyCount ;
         delete this.classIndex ;
         delete this.contentFile ;
+        delete this.worker ;
 
         return this ;
     }
