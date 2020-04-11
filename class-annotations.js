@@ -26,7 +26,8 @@ class ClassAnnotation {
             this.isFile = true;
             this.isDirectory = false;
 
-            this.run() ;
+            this.runHeaderClass() ;
+            this.runBodyClass() ;
 
         } else {
             // here file not exists
@@ -49,7 +50,7 @@ class ClassAnnotation {
         this.cleanOutput() ;
     }
 
-    run() {
+    runHeaderClass() {
 
         if( this.contentFile.indexOf('/**') !== -1 ) {
 
@@ -63,6 +64,173 @@ class ClassAnnotation {
         }
 
         this.success = true ;
+    }
+
+    runBodyClass() {
+
+        this.bodyAnnotations = [] ;
+
+        this.classIndex.forEach( classIndex => {
+
+            const outsideClass = this.contentFile.slice( classIndex.index + ClassAnnotation.detectorClass.length, ).trim() ;
+
+            const markerOpen = outsideClass.indexOf('{') ;
+
+            const innerClass = outsideClass.slice( markerOpen+1 ,  ).trim() ;
+
+            if( innerClass.indexOf('/**') !== -1 ) {
+
+                this.extractBodyClassAnnotations( innerClass , classIndex.classname ) ;
+            }
+
+        } ) ;
+
+    }
+
+    extractBodyClassAnnotations( contentClass, classname ) {
+
+        const PATTERN_METHOD_OPEN = /[a-z]{1}[a-z\d\_]{1,254}\(.*\).*\{/ ;
+
+        contentClass = contentClass.split('\n').filter( line => !!line.length ).map( line => line.trim() ) ;
+
+        let isOpened = false ;
+
+        let openToLine = null;
+
+        let closeToLine = null;
+
+        contentClass.forEach( (line,key) => {
+
+            if( closeToLine ) {
+
+                // check if this line is an define method
+
+                if( PATTERN_METHOD_OPEN.test(line) ) {
+
+                    let out = false;
+                    const methodname =  line.replace('(','').replace(')','').replace('{','').trim().split('').filter( char =>  {
+
+                        if( out ) return false ;
+
+                        if( !/^[a-z\d\_]$/i.test( char ) ) {
+                            out = true ;
+                            return false;
+                        }
+                        return true;
+                    } ).join('') ;
+
+                    this.bodyAnnotations.push( {
+                        classname: classname,
+                        method: methodname,
+                        lines: contentClass.slice( openToLine , closeToLine+1 )
+                    } ) ;
+
+                    isOpened = false;
+                    closeToLine = null;
+                    openToLine = null;
+                }
+            }
+
+            if( isOpened ) {
+
+                if( line.indexOf('*/') !== -1 ) {
+
+                    closeToLine = key ;
+                }
+
+            } else {
+
+                if( line.indexOf('/**') !== -1 ) {
+
+                    isOpened = true;
+                    openToLine = key ;
+                }
+
+            }
+
+        } ) ;
+
+        this.methods = {} ;
+
+        this.bodyAnnotations.forEach( body => {
+
+            const pusher = {
+                classname: body.classname ,
+                method: body.method ,
+
+                annotations: new ReaderAnnotations(
+                    body.lines ,
+                    body.classname
+                ) ,
+
+                get data() {
+
+                    return this.annotations.data ;
+                }
+            } ;
+
+            if( this.methods[ body.classname ] instanceof Array ) {
+
+                this.methods[ body.classname ].push( pusher ) ;
+            } else {
+
+                const arrMethods = this.extendsMethodArray() ;
+
+                arrMethods.push( pusher ) ;
+
+                this.methods[ body.classname ] = arrMethods ;
+            }
+
+        } ) ;
+
+    }
+
+    extendsMethodArray() {
+
+        const arrMethods = [] ;
+
+        // arr.getWidth( "Route" )
+        // arr.getWidth( /^Route$/ )
+        arrMethods.getWidth = function( matcher ) {
+
+            matcher = typeof matcher === "string" ?
+                new RegExp(`^${matcher}$`):
+                matcher instanceof RegExp ?
+                matcher: null
+            ;
+
+            if( !matcher ) {
+
+                throw RangeError("arg1: matcher should be a string value or a instanceof RegExp") ;
+            }
+
+            const annotationsMethod = [] ;
+
+            this.forEach( method => {
+
+                const data = method.data ;
+
+                Object.keys( data ).forEach( attr => {
+
+                    if( matcher.test( attr ) ) {
+
+                        annotationsMethod.push( {
+                            ...data[attr],
+                            as: attr,
+                            classname: method.classname,
+                            method: method.method
+                        } ) ;
+                    }
+
+                } ) ;
+
+            } ) ;
+
+            return annotationsMethod ;
+
+        } ;
+
+        return arrMethods ;
     }
 
     instancesReaders() {
@@ -165,6 +333,7 @@ class ClassAnnotation {
         delete this.classIndex ;
         delete this.contentFile ;
         delete this.worker ;
+        delete this.bodyAnnotations
 
         return this ;
     }
@@ -236,6 +405,8 @@ class ClassAnnotation {
                     !!line.length
                 ) )
             ;
+
+            if( partial.length === 0 ) return ;
 
             this.partials.push( {
                 lines: partial ,

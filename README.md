@@ -10,6 +10,8 @@
 
 ### can read recursive directories
 
+### read methods annotations
+
 A comment not starting with an: "@" character not be considered as an annotation, but may be brought up in the data provided via the table: excludes
 
 - npm install class-annotations --save
