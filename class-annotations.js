@@ -1,3 +1,12 @@
+/**
+ *
+ * @TODO: resolve keywords @class inner commentary
+ *
+ * ./lib/replace-classwords-commentary.js <- string|content -> string|normalizeContent
+ *
+ * and call before ciclelyfe complier for each content file
+ */
+
 const pathResolver = require('path') ;
 const fs = require('fs') ;
 
@@ -17,6 +26,8 @@ class ClassAnnotation {
         this.pathFile = pathFile ;
         this.items = [] ;
 
+        // console.log( this.pathFile , "\t\t" , !!fromRd , "\t\t" ,  `this is ${!!fromRd ? "":"not"} depths folder` )
+
         if( fs.existsSync( this.pathFile ) ) {
 
             this.contentFile = fs.readFileSync(
@@ -31,10 +42,11 @@ class ClassAnnotation {
 
         } else {
             // here file not exists
-
             this.pathDirectory = pathFile ;
 
             if( fs.existsSync( this.pathDirectory ) ) {
+
+                // this path is an directory
 
                 const directoryName = pathResolver.basename( this.pathDirectory ) ;
 
@@ -70,20 +82,35 @@ class ClassAnnotation {
 
         this.bodyAnnotations = [] ;
 
-        this.classIndex.forEach( classIndex => {
+        if( !this.classIndex ) {
 
-            const outsideClass = this.contentFile.slice( classIndex.index + ClassAnnotation.detectorClass.length, ).trim() ;
+            // job reject this file not contains class define
 
-            const markerOpen = outsideClass.indexOf('{') ;
+            this.success = false ;
 
-            const innerClass = outsideClass.slice( markerOpen+1 ,  ).trim() ;
+            this.cleanOutput() ;
 
-            if( innerClass.indexOf('/**') !== -1 ) {
+        } else {
 
-                this.extractBodyClassAnnotations( innerClass , classIndex.classname ) ;
-            }
+            this.classIndex.forEach( classIndex => {
 
-        } ) ;
+                const outsideClass = this.contentFile.slice(
+                    classIndex.index + ClassAnnotation.detectorClass.length,
+                ).trim() ;
+
+                const markerOpen = outsideClass.indexOf('{') ;
+
+                const innerClass = outsideClass.slice( markerOpen+1 ,  ).trim() ;
+
+                if( innerClass.indexOf('/**') !== -1 ) {
+
+                    this.extractBodyClassAnnotations( innerClass , classIndex.classname ) ;
+                }
+
+            } ) ;
+
+        }
+
 
     }
 
