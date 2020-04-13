@@ -1,6 +1,4 @@
-// const fs = require('fs') ;
-// const pathResolver = require('path') ;
-
+// THIS FILE IS NOT REAL UNIT TEST THIS IS SANDBOX DEBUG #loldev
 
 const
     pathResolver = require('path') ,
@@ -10,6 +8,6 @@ const
 ;
 
 
-const an = new ClassAnnotations('./files/') ;
+const an = new ClassAnnotations('./files/__stuff/class-stuff.js') ;
 
-console.log( an.files.__stuff );
+console.log( an.methods.Foo.getWidth('a') );

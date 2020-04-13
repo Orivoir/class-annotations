@@ -26,8 +26,6 @@ class ClassAnnotation {
         this.pathFile = pathFile ;
         this.items = [] ;
 
-        // console.log( this.pathFile , "\t\t" , !!fromRd , "\t\t" ,  `this is ${!!fromRd ? "":"not"} depths folder` )
-
         if( fs.existsSync( this.pathFile ) ) {
 
             this.contentFile = fs.readFileSync(
@@ -116,7 +114,7 @@ class ClassAnnotation {
 
     extractBodyClassAnnotations( contentClass, classname ) {
 
-        const PATTERN_METHOD_OPEN = /[a-z]{1}[a-z\d\_]{1,254}\(.*\).*\{/ ;
+        const PATTERN_METHOD_OPEN = /^[a-z]{1}[a-z\d\_]{0,254}.*\(.*/ ;
 
         contentClass = contentClass.split('\n').filter( line => !!line.length ).map( line => line.trim() ) ;
 
@@ -131,8 +129,15 @@ class ClassAnnotation {
             if( closeToLine ) {
 
                 // check if this line is an define method
+                if( PATTERN_METHOD_OPEN.test(line.trim()) ) {
 
-                if( PATTERN_METHOD_OPEN.test(line) ) {
+                    if( closeToLine+1 !== key ) {
+
+                        isOpened = false ;
+                        openToLine = null;
+                        closeToLine = null;
+                        return;
+                    }
 
                     let out = false;
                     const methodname =  line.replace('(','').replace(')','').replace('{','').trim().split('').filter( char =>  {
@@ -160,9 +165,14 @@ class ClassAnnotation {
 
             if( isOpened ) {
 
+                if( line.indexOf('/**') !== -1 ) {
+                    openToLine = key ;
+                    closeToLine = null;
+                }
+
                 if( line.indexOf('*/') !== -1 ) {
 
-                    closeToLine = key ;
+                    closeToLine = key;
                 }
 
             } else {
