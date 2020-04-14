@@ -1,0 +1,23 @@
+/**
+ * Should be removed above line:
+ * @<MARKER_REMOVE_BEFORE_COMPILING>desc Lorem Ipsum
+ */
+
+
+// this <MARKER_REMOVE_BEFORE_COMPILING> should be lorem ipsum
+class Foo {
+
+    /**
+     * this member of <MARKER_REMOVE_BEFORE_COMPILING> lorem ipsul blah blah
+     * @memberof Foo
+     */
+    bar() {
+
+    }
+
+} ;
+
+
+/** if <MARKER_REMOVE_BEFORE_COMPILING> class blah blah because <MARKER_REMOVE_BEFORE_COMPILING> blah */ class Stuff {
+
+}

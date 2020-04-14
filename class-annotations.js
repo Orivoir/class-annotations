@@ -14,6 +14,8 @@ const ReaderAnnotations = require('./lib/reader-annotations') ;
 const clientDir = require('./lib/client-dir')() ;
 const ReadDirectory = require('./lib/read-directory') ;
 
+const replaceClassInsideCommentary = require('./lib/replace-classwords-commentary') ;
+
 class ClassAnnotation {
 
     // marker of class keywords
@@ -34,6 +36,8 @@ class ClassAnnotation {
 
             this.isFile = true;
             this.isDirectory = false;
+
+            this.contentFile = replaceClassInsideCommentary( this.contentFile ) ;
 
             this.runHeaderClass() ;
             this.runBodyClass() ;
@@ -492,7 +496,7 @@ class ClassAnnotation {
         this.isAlreadyCount = true ;
         this.countClass = 0 ;
         this.classIndex = [] ;
-        const searcher = 'class' ;
+        const searcher = 'class ' ;
 
         while ( this.contentFile.indexOf( searcher ) !== -1 ) {
 

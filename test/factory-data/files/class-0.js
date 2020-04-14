@@ -1,3 +1,7 @@
+
+/**
+ * @classdesc( { name: "abc" } )
+ */
 class Foo {
 
     /**

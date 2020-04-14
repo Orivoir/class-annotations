@@ -14,18 +14,15 @@ const
     factoryData = require('./factory-data/class-annotations.json')
 ;
 
-describe('test `ClassAnnotations`' , () => {
+describe.skip('test `ClassAnnotations`' , () => {
 
-    it.skip('object build should match with format:' , () => {
+    it('object build should match with format:' , () => {
 
         factoryData.forEach( attempt => {
 
             console.log(
                 new ClassAnnotations( attempt.entry )
-                    .methods
-                    .Foo
-                    .getWidth('eg')
-            );
+            ) ;
 
         } ) ;
 
